@@ -11,7 +11,12 @@ module.exports = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "gradient-infitik": "linear-gradient(to right, #53C8D8, #668AF7,#49EBC8)"
       },
+      colors: {
+        "primary": "#0E0E0E",
+        "secondary": "#6A98CC"
+      }
     },
   },
   plugins: [],
