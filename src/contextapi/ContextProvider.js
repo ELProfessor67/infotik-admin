@@ -28,8 +28,7 @@ export function Provider({children}) {
 
         try {
           const q = query(
-              collection(FIREBASE_DB, 'post'),
-              // where("approved","==",false)
+              collection(FIREBASE_DB, 'post')
           )
           const unsubscribe = onSnapshot(q, (snapshot) => {
               const postData = [];

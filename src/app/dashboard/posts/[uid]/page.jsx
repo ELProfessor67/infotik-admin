@@ -1,6 +1,6 @@
 "use client"
 import Dialog from '@/components/Dialog';
-import KeywordBox from '@/components/keywordBox';
+import KeywordBox from '@/components/KeywordBoxstyle';
 import { approvePost, deletePost, fieldUpdate, getSinglePosts, getUserById } from '@/http';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

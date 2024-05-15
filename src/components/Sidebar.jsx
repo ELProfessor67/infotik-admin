@@ -18,6 +18,11 @@ const Sidebar = () => {
                     <img src='/Search.png' alt='icon' className='object-contain hover:border-b-2 hover:border-[#30A092] pb-1'/>
                 </Link>
             </li>
+            <li>
+                <Link href={'/dashboard/upload'}>
+                    <h1 className='text-4xl text-[#30A092]'>+</h1>
+                </Link>
+            </li>
         </ul>
 
 

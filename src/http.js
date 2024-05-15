@@ -9,10 +9,14 @@ import {
     getDoc,
     updateDoc,
     deleteDoc,
+    setDoc,
+    serverTimestamp,
 } from "firebase/firestore";
 
 
 import {FIREBASE_AUTH,FIREBASE_DB} from '@/firebaseConfig';
+import uuid from "uuid-random";
+import { saveMediaToStorage } from "./utils/saveMediaToStorage";
 
 
 
@@ -134,6 +138,43 @@ export const fieldUpdate = async (uid,object) => {
         }
         return false
     } catch (error) {
+        return false
+    }
+}
+
+
+export const createPost = async (description, video, thumbnail, newstitle,newsdescription,newslink, hashtags) => {
+    try {
+        console.log("saveing....")
+        
+        let storagePostId = uuid()
+        let media = await Promise.all([
+            saveMediaToStorage(video, `post/${FIREBASE_AUTH.currentUser.uid}/${storagePostId}/video`),
+            saveMediaToStorage(thumbnail, `post/${FIREBASE_AUTH.currentUser.uid}/${storagePostId}/thumbnail`)
+        ])
+
+        console.log(storagePostId)
+
+        
+        const ref = doc(collection(FIREBASE_DB,'post'),storagePostId)
+        await setDoc(ref,{
+            creator: FIREBASE_AUTH.currentUser.uid,
+            media,
+            description,
+            likesCount: 0,
+            commentsCount: 0,
+            creation: serverTimestamp(),
+            uid: storagePostId,
+            newstitle,
+            newsdescription,
+            newslink,
+            hashtags,
+            approved: false
+        })
+       console.log("done...")
+        return true;
+    } catch (error) {
+        console.log(error.message,"error")
         return false
     }
 }
