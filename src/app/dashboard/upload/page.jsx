@@ -4,9 +4,10 @@ import Dialog from '@/components/Dialog';
 import KeywordBox from '@/components/KeywordBoxstyle';
 import { createPost, isExist } from '@/http';
 import { useRouter } from 'next/navigation';
-import React, { useRef, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import fileToBlob from "@/utils/fileToBlob"
 import generateThumbnailBlob from '@/utils/generateThumbnailBlob';
+import { Context } from '@/contextapi/ContextProvider';
 
 
 const allKeyword =[
@@ -66,6 +67,9 @@ const page = () => {
     const [thumbnailPrev, setThumbnailPrev] = useState('');
     const [newstitle, setnewstitle] = useState('');
     const [loading, setLoading] = useState(false)
+    const [user, setUser] = useState();
+
+    const {users} = useContext(Context)
  
     const formRef = useRef()
 
@@ -127,8 +131,11 @@ const page = () => {
 
 
       const handleSavePost = async () => {
+        if(!user){
+          window.alert("Please select user");
+        }
         setLoading(true)
-        const res = await createPost(description, video, thumbnail, newstitle, newsdescription, newslink, selectedyKeword);
+        const res = await createPost(description, video, thumbnail, newstitle, newsdescription, newslink, selectedyKeword,user);
         
         setDescription('');
         setSelectedKeyword([])
@@ -147,6 +154,19 @@ const page = () => {
       </div>
 
       <form className='max-w-[50%] mx-auto flex flex-col gap-5' ref={formRef}>
+        <div>
+            <label className='text-white block mb-2'>Select User</label>
+            <div className='flex py-2 gap-2 px-2 rounded-md border border-secondary mx-auto'>
+                <select type='file' className='text-white w-full bg-primary outline-none border-none' accept='video/*' placeholder='Paste video share link' value={user} onChange={(e) => setUser(e.target.value)}>
+                  <option>Select User</option>
+                  {
+                    users.map(user => (
+                      <option value={user.uid}>{user.displayName}</option>
+                    ))
+                  }
+                </select>
+            </div>
+        </div>
         <div>
             <label className='text-white block mb-2'>Select Video</label>
             <div className='flex py-2 gap-2 px-2 rounded-md border border-secondary mx-auto'>

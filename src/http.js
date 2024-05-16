@@ -143,7 +143,7 @@ export const fieldUpdate = async (uid,object) => {
 }
 
 
-export const createPost = async (description, video, thumbnail, newstitle,newsdescription,newslink, hashtags) => {
+export const createPost = async (description, video, thumbnail, newstitle,newsdescription,newslink, hashtags,user) => {
     try {
         console.log("saveing....")
         
@@ -158,7 +158,7 @@ export const createPost = async (description, video, thumbnail, newstitle,newsde
         
         const ref = doc(collection(FIREBASE_DB,'post'),storagePostId)
         await setDoc(ref,{
-            creator: FIREBASE_AUTH.currentUser.uid,
+            creator: user,
             media,
             description,
             likesCount: 0,

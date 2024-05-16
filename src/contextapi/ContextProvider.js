@@ -10,6 +10,7 @@ export function Provider({children}) {
     const [user, setUser] = useState(null);
     const [isAuth, setisAuth] = useState(undefined);
     const [posts, setPosts] = useState([]);
+    const [users, setUsers] = useState([]);
 
 
     useEffect(() => {
@@ -41,10 +42,28 @@ export function Provider({children}) {
         } catch (error) {
             console.log(error.message,"error");
         }
+
+
+
+        try {
+          const q = query(
+            collection(FIREBASE_DB, 'user')
+          )
+          const unsubscribe = onSnapshot(q, (snapshot) => {
+            const userdata = [];
+            snapshot.forEach((doc) => {
+              userdata.push({ id: doc.id, ...doc.data() });
+            });
+            setUsers(userdata);
+            
+          });
+        } catch (error) {
+          
+        }
       })()
     },[])
   return (
-    <Context.Provider value={{user,setUser,isAuth,setisAuth,posts}}>
+    <Context.Provider value={{user,setUser,isAuth,setisAuth,posts,users}}>
       {children}
     </Context.Provider>
   );
