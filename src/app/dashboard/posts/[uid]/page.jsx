@@ -1,10 +1,11 @@
 "use client"
 import Dialog from '@/components/Dialog';
 import KeywordBox from '@/components/KeywordBoxstyle';
+import { Context } from '@/contextapi/ContextProvider';
 import { approvePost, deletePost, fieldUpdate, getSinglePosts, getUserById } from '@/http';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 
 
@@ -54,6 +55,10 @@ const page = ({params}) => {
   const [selectedyKeword, setSelectedKeyword] = useState([])
   const [newslink, setNewsLink] = useState('')
   const [description, setDescription] = useState('')
+  const [deleteLoading,setdeleteLoading] = useState(false)
+  const [denyLoading, setDenyLoading] = useState(false)
+
+  const {nextPost,setNextPost,approvePosts} = useContext(Context);
 
   const router = useRouter();
 
@@ -82,6 +87,14 @@ const page = ({params}) => {
     const res = await approvePost(params.uid);
     await getPosts();
     setLoading(false)
+   
+    const next = approvePosts[nextPost].uid;
+    if(nextPost >= approvePost.length){
+      setNextPost(0);
+    }else{
+      setNextPost(nextPost+1)
+    }
+    router.push(`/dashboard/posts/${next}`)
   }
 
   const handleSelectkeyword = (k) => {
@@ -97,11 +110,19 @@ const page = ({params}) => {
     })
   }
 
-  const keywordUpdate = async () => {
+  const keywordUpdate = async (clear=false) => {
+
       setkLoading(true)
-      const res = await fieldUpdate(params.uid,{hashtags: selectedyKeword});
+      if(clear){
+
+        const res = await fieldUpdate(params.uid,{hashtags: []});
+      }else{
+        const res = await fieldUpdate(params.uid,{hashtags: selectedyKeword});
+
+      }
       await getPosts();
       setkLoading(false)
+      setKeywordOpen(false)
 
   }
   const NewsLinkUpdate = async () => {
@@ -109,6 +130,7 @@ const page = ({params}) => {
       const res = await fieldUpdate(params.uid,{newslink});
       await getPosts();
       setnLoading(false)
+      setLinkOpen(false)
 
   }
 
@@ -117,13 +139,33 @@ const page = ({params}) => {
     const res = await fieldUpdate(params.uid,{description});
     await getPosts();
     setdLoading(false)
+    setDescOpen(false)
 
   }
 
 
   const deletePostHandler = async () => {
+    setdeleteLoading(true)
     const res = await deletePost(params.uid);
-    router.post('/dashboard');
+    router.push('/dashboard');
+    setdeleteLoading(false)
+  }
+
+
+  const handleDeny = async () => {
+    setDenyLoading(false)
+    const res = await approvePost(params.uid);
+    await getPosts();
+    setDenyLoading(true)
+    
+    setDenyOpen(false);
+    const next = approvePosts[nextPost].uid;
+    if(nextPost >= approvePost.length){
+      setNextPost(0);
+    }else{
+      setNextPost(nextPost+1)
+    }
+    router.push(`/dashboard/posts/${next}`)
   }
   return (
     <section className='h-full relative'>
@@ -135,7 +177,7 @@ const page = ({params}) => {
         <div className='h-full flex items-end relative'>
           {
             post?.approved 
-            ? <button className='py-2 px-8 rounded-md border border-red-500 text-red-500 w-[70%] mb-20' onClick={deletePostHandler}>DELETE</button>
+            ? <button className='py-2 px-8 rounded-md border border-red-500 text-red-500 w-[70%] mb-20' onClick={deletePostHandler}>{deleteLoading ? "Loading" : "DELETE"}</button>
             : <button className='py-2 px-8 rounded-md border border-red-500 text-red-500 w-[70%] mb-20' onClick={() => setDenyOpen(true)}>DENY</button>
 
           }
@@ -165,7 +207,7 @@ const page = ({params}) => {
             </div>
 
             <div className='mt-10 relative'>
-              <h3 className='text-secondary text-2xl mt-2'>BBC News</h3>
+              <h3 className='text-secondary text-2xl mt-2'>{post?.newslink?.split("/")[2]?.slice(0,6)}</h3>
               <div className='border border-secondary flex relative rounded-md'>
                 <div className='flex-1 flex items-center  relative px-2'>
                   <input type='text' className='text-white bg-primary w-full outline-none border-none' readOnly={true} value={post?.newslink}/>
@@ -206,7 +248,7 @@ const page = ({params}) => {
        <div className='px-3 flex justify-center flex-col items-center'>
           <h4 className='text-white text-center mb-4'>ARE YOU SURE UOU WANT TO DENY THIS VIDEO?</h4>
           <img src={post?.media[1]} className='w-full h-[27rem]'/>
-          <button className='py-2 px-8 rounded-md border border-red-500 text-red-500 w-[100%] mb-5 mt-5' onClick={() => setDenyOpen(true)}>DENY</button>
+          <button className='py-2 px-8 rounded-md border border-red-500 text-red-500 w-[100%] mb-5 mt-5' onClick={handleDeny}>{denyLoading ? "Loading..." : "DENY"}</button>
           <button className='py-2 px-8 rounded-md border border-secondary text-secondary w-[50%] mb-5' onClick={() => setDenyOpen(false)}>Cancel</button>
         </div>
       </Dialog>
@@ -249,9 +291,12 @@ const page = ({params}) => {
             ))
           }
         </div>
-        <div className='flex items-center justify-center'>
-          <button className='py-2 px-8 rounded-md border border-secondary text-secondary w-[50%] my-5 mt-10 mx-auto' disabled={kloading} onClick={keywordUpdate}>
+        <div className='flex items-center justify-center gap-4'>
+          <button className='py-2 px-8 rounded-md border border-secondary text-secondary w-[50%] my-5 mt-10 mx-auto' disabled={kloading} onClick={() => keywordUpdate(false)}>
             {kloading ? 'Loading...' :'UPDATE'}
+          </button>
+          <button className='py-2 px-8 rounded-md border border-secondary text-secondary w-[50%] my-5 mt-10 mx-auto' disabled={kloading} onClick={() => keywordUpdate(true)}>
+            {kloading ? 'Loading...' :'Clear'}
           </button>
         </div>
       </Dialog>

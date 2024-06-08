@@ -11,6 +11,9 @@ export function Provider({children}) {
     const [isAuth, setisAuth] = useState(undefined);
     const [posts, setPosts] = useState([]);
     const [users, setUsers] = useState([]);
+    const [nextPost, setNextPost] = useState(0);
+    const [approvePosts, setApprovedPosts] = useState([]);
+  
 
 
     useEffect(() => {
@@ -37,6 +40,8 @@ export function Provider({children}) {
                 postData.push({ id: doc.id, ...doc.data() });
               });
               setPosts(postData);
+              const approved = postData.filter(post => post.approved)
+              setApprovedPosts(approved)
             });
           
         } catch (error) {
@@ -63,7 +68,7 @@ export function Provider({children}) {
       })()
     },[])
   return (
-    <Context.Provider value={{user,setUser,isAuth,setisAuth,posts,users}}>
+    <Context.Provider value={{user,setUser,isAuth,setisAuth,posts,users,nextPost, setNextPost,approvePosts}}>
       {children}
     </Context.Provider>
   );

@@ -1,10 +1,25 @@
 "use client"
 import { Context } from '@/contextapi/ContextProvider'
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useContext } from 'react'
 
 const page = () => {
-  const {posts} = useContext(Context);
+  const {posts,setNextPost,approvePosts} = useContext(Context);
+  const router = useRouter();
+
+
+  const handleEdit = (uid,index) => {
+    
+    const currentindex = approvePosts.indexOf(posts[index])
+    if(currentindex == -1){
+      setNextPost(0);
+    }else{
+      setNextPost(currentindex+1)
+    }
+  
+    router.push(`/dashboard/posts/${uid}`);
+  }
   console.log(posts[0]?.approved)
   return (
     <section>
@@ -41,7 +56,7 @@ const page = () => {
             </thead>
             <tbody>
               {
-                posts && posts.map((data) => (
+                posts && posts.map((data,index) => (
                   <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                     <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       {data.uid}
@@ -59,7 +74,7 @@ const page = () => {
                       {data.approved ? <span className='text-green-500'> &#10004; </span>: <span className='text-red-500'> &#10006; </span>}
                     </td>
                     <td className="px-6 py-4">
-                      <Link href={`/dashboard/posts/${data.uid}`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</Link>
+                      <button onClick={() => handleEdit(data.uid,index)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
                     </td>
                   </tr>
                 ))
