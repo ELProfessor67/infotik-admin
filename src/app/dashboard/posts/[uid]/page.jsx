@@ -195,15 +195,23 @@ const page = ({params}) => {
               <p className='text-white'>@{user?.username}</p>
             </div>
 
-            <div className='mt-10 relative flex flex-wrap gap-2 justify-center'>
+            <div className='mt-16 relative flex flex-wrap gap-2 justify-center'>
               {
                 post && post?.hashtags.map(data => (
                   <KeywordBox text={data}/>
                 ))
               }
-              <button className='bg-none border-none outline-none absolute -right-2 -top-5' onClick={() => setKeywordOpen(true)}>
+              <button className='bg-none border-none outline-none absolute -right-2 -top-10' onClick={() => setKeywordOpen(true)}>
                 <img src='/Edit.png' className='object-contain'/>
               </button>
+              {
+                post?.hashtags.length != 0 &&
+                <button className='bg-none p-1 px-2 outline-none border border-red-500 rounded-md text-red-500 absolute -left-5 -top-10' onClick={() => keywordUpdate(true)}>
+                  
+                  {kloading ? 'Loading...' :'delete keyword'}
+                </button>
+              }
+              
             </div>
 
             <div className='mt-10 relative'>
@@ -295,9 +303,9 @@ const page = ({params}) => {
           <button className='py-2 px-8 rounded-md border border-secondary text-secondary w-[50%] my-5 mt-10 mx-auto' disabled={kloading} onClick={() => keywordUpdate(false)}>
             {kloading ? 'Loading...' :'UPDATE'}
           </button>
-          <button className='py-2 px-8 rounded-md border border-secondary text-secondary w-[50%] my-5 mt-10 mx-auto' disabled={kloading} onClick={() => keywordUpdate(true)}>
+          {/* <button className='py-2 px-8 rounded-md border border-secondary text-secondary w-[50%] my-5 mt-10 mx-auto' disabled={kloading} onClick={() => keywordUpdate(true)}>
             {kloading ? 'Loading...' :'Clear'}
-          </button>
+          </button> */}
         </div>
       </Dialog>
     </section>
