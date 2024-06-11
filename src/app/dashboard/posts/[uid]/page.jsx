@@ -145,10 +145,22 @@ const page = ({params}) => {
 
 
   const deletePostHandler = async () => {
+    const confirm = window.confirm("Are you sure. You want to delete this post.")
+    if(!confirm){
+      return 
+    }
     setdeleteLoading(true)
     const res = await deletePost(params.uid);
-    router.push('/dashboard');
     setdeleteLoading(false)
+
+    
+    const next = approvePosts[nextPost].uid;
+    if(nextPost >= approvePost.length){
+      setNextPost(0);
+    }else{
+      setNextPost(nextPost+1)
+    }
+    router.push(`/dashboard/posts/${next}`)
   }
 
 
@@ -175,12 +187,13 @@ const page = ({params}) => {
 
       <div className='px-20 grid grid-cols-3 h-[80%] relative'>
         <div className='h-full flex items-end relative'>
-          {
+          {/* {
             post?.approved 
             ? <button className='py-2 px-8 rounded-md border border-red-500 text-red-500 w-[70%] mb-20' onClick={deletePostHandler}>{deleteLoading ? "Loading" : "DELETE"}</button>
             : <button className='py-2 px-8 rounded-md border border-red-500 text-red-500 w-[70%] mb-20' onClick={() => setDenyOpen(true)}>DENY</button>
-
-          }
+            
+            } */}
+          <button className='py-2 px-8 rounded-md border border-red-500 text-red-500 w-[70%] mb-20' onClick={deletePostHandler}>{deleteLoading ? "Loading" : "DELETE"}</button>
         </div>
         <div className='h-full bg-primary relative'>
           <video controls poster={post?.media[1]} src={post?.media[0]} className='object-contain h-[calc(100%-0px)] w-full'>
