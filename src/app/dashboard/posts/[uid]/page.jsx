@@ -88,12 +88,13 @@ const page = ({params}) => {
     await getPosts();
     setLoading(false)
    
-    const next = approvePosts[nextPost].uid;
-    if(nextPost >= approvePost.length){
-      setNextPost(0);
-    }else{
-      setNextPost(nextPost+1)
+    let next = approvePosts[nextPost]?.uid;
+    if(!next){
+      return
     }
+    
+    setNextPost(prev => prev+1)
+    
     router.push(`/dashboard/posts/${next}`)
   }
 

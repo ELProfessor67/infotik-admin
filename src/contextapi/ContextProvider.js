@@ -13,6 +13,8 @@ export function Provider({children}) {
     const [users, setUsers] = useState([]);
     const [nextPost, setNextPost] = useState(0);
     const [approvePosts, setApprovedPosts] = useState([]);
+
+    console.log(nextPost,"next")
   
 
 
@@ -40,7 +42,7 @@ export function Provider({children}) {
                 postData.push({ id: doc.id, ...doc.data() });
               });
               setPosts(postData);
-              const approved = postData.filter(post => post.approved)
+              const approved = postData.filter(post => !post.approved)
               setApprovedPosts(approved)
             });
           
